@@ -9,7 +9,7 @@ The LLM reads your diffs, understands the changes, decides the right branch, wri
 Via npm (recommended):
 
 ```bash
-pi install npm:git-assistant
+pi install npm:pi-git-assistant
 ```
 
 Via git:
@@ -21,7 +21,7 @@ pi install git:github.com/elt7613/pi-git-assistant
 Or from a local path:
 
 ```bash
-pi install /path/to/git-assistant
+pi install /path/to/pi-git-assistant
 ```
 
 ## Commands
