@@ -22,7 +22,7 @@ export function clearRepoRootCache(): void {
 
 export function toRepoRelative(absPath: string, repoRoot: string): string | null {
 	const rel = relative(repoRoot, absPath).replace(/\\/g, "/");
-	if (rel.startsWith("..") || rel === ".") return null;
+	if (rel.startsWith("..") || rel === "." || rel === "") return null;
 	return rel;
 }
 
