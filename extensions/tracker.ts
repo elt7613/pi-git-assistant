@@ -22,7 +22,13 @@ export async function reconstructSessionFiles(ctx: ExtensionContext, pi: Extensi
 	sessionFiles.clear();
 	let fromEntries = 0;
 	let fromFallback = 0;
-	const root = await getRepoRoot(pi);
+	let root: string | null = null;
+
+	try {
+		root = await getRepoRoot(pi);
+	} catch (err) {
+		console.error("[git-assistant] Failed to resolve repo root during reconstruction:", err);
+	}
 
 	for (const entry of ctx.sessionManager.getEntries()) {
 		// Primary: custom entries created by this extension
@@ -40,8 +46,8 @@ export async function reconstructSessionFiles(ctx: ExtensionContext, pi: Extensi
 			Array.isArray(entry.message.content)
 		) {
 			for (const block of entry.message.content) {
-				if (block?.type === "toolCall" && (block.toolName === "write" || block.toolName === "edit")) {
-					const absPath = block.input?.path;
+				if (block?.type === "toolCall" && (block.name === "write" || block.name === "edit")) {
+					const absPath = block.arguments?.path ?? block.input?.path;
 					if (absPath && typeof absPath === "string" && root) {
 						const relPath = toRepoRelative(absPath, root);
 						if (relPath) {
@@ -68,12 +74,22 @@ export async function handleToolResult(
 ): Promise<void> {
 	if ((event.toolName === "write" || event.toolName === "edit") && event.input?.path) {
 		const absPath = event.input.path as string;
-		const root = await getRepoRoot(pi);
+		let root: string | null = null;
+		try {
+			root = await getRepoRoot(pi);
+		} catch (err) {
+			console.error("[git-assistant] getRepoRoot failed during tool tracking:", err);
+			return;
+		}
 		if (!root) return;
 		const relPath = toRepoRelative(absPath, root);
 		if (relPath) {
 			sessionFiles.add(relPath);
-			pi.appendEntry("git-file-track", { path: relPath });
+			try {
+				pi.appendEntry("git-file-track", { path: relPath });
+			} catch (err) {
+				console.error("[git-assistant] appendEntry failed for", relPath, err);
+			}
 		}
 	}
 }
