@@ -19,6 +19,13 @@ import { clearRepoRootCache } from "./git.js";
 import { executeCommit } from "./executor.js";
 import { getCommitMode, triggerCommit } from "./commands.js";
 import { handleToolResult, reconstructSessionFiles } from "./tracker.js";
+import {
+	requestApproval,
+	isGateBlocked,
+	getBlockedError,
+	getPendingError,
+	resetGate,
+} from "./gate.js";
 
 export default function (pi: ExtensionAPI) {
 	// Track session file changes (persisted in session)
@@ -76,6 +83,21 @@ export default function (pi: ExtensionAPI) {
 		}),
 
 		async execute(_toolCallId, params, _signal, onUpdate, ctx: ExtensionContext) {
+			// Gate: block if user previously denied this session
+			if (isGateBlocked()) {
+				return getBlockedError();
+			}
+
+			// Gate: ask user for one-time approval
+			const approved = await requestApproval(ctx);
+			if (!approved) {
+				// If still not blocked, it means a dialog was already active
+				if (!isGateBlocked()) {
+					return getPendingError();
+				}
+				return getBlockedError();
+			}
+
 			onUpdate?.({
 				content: [{ type: "text", text: `Executing: ${params.branchAction} → ${params.branchName}...` }],
 			});
@@ -117,5 +139,14 @@ export default function (pi: ExtensionAPI) {
 	pi.registerCommand("git-commit-all", {
 		description: "Agent-driven commit of all changes (LLM analyzes + decides)",
 		handler: async (args, ctx) => triggerCommit(args, "all", pi, ctx),
+	});
+
+	// Manual command to reset the gate (only via Command Palette / user action)
+	pi.registerCommand("git-commit-reset-gate", {
+		description: "Reset the git execution gate so the agent can prompt again",
+		handler: async (_args, ctx) => {
+			resetGate();
+			ctx.ui.notify("Git execution gate reset. The agent will prompt again on next commit.", "info");
+		},
 	});
 }
