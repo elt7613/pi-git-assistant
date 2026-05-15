@@ -1,6 +1,6 @@
 {
   "name": "pi-git-assistant",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Agent-driven git commit extension for pi. LLM analyzes changes, decides branches, writes commit messages, and crafts PR descriptions.",
   "keywords": ["pi-package", "git", "commit", "assistant"],
   "author": "",
