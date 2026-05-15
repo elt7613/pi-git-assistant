@@ -98,7 +98,7 @@ export default function (pi: ExtensionAPI) {
 				`Files  : ${result.files.join(", ")}`,
 			];
 			if (result.prDescription) {
-				lines.push(``, `--- PR Description ---`, result.prDescription);
+				lines.push(``, `--- PR Description ---`, `\`\`\`markdown`, result.prDescription, `\`\`\``);
 			}
 
 			return {
