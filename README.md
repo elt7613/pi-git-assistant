@@ -1,11 +1,17 @@
-# 🤖 pi-git-assistant
 
-[![NPM Version](https://img.shields.io/npm/v/pi-git-assistant.svg?style=flat-square)](https://www.npmjs.com/package/pi-git-assistant)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square)](https://opensource.org/licenses/MIT)
 
-**An agent-driven git commit assistant for [pi](https://pi.dev).**
+<div align="center">
+  <img src="assets/cover.png" alt="pi-git-assistant cover" />
 
-Stop wrangling git branches and writing commit messages by hand. The LLM reads your diffs, understands your actual code changes, decides the correct branch, writes a conventional commit message, and crafts a professional PR description—all automatically. 
+  # 𝞹 git-assistant
+
+  [![NPM Version](https://img.shields.io/npm/v/pi-git-assistant.svg?style=flat-square)](https://www.npmjs.com/package/pi-git-assistant)
+  [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square)](https://opensource.org/licenses/MIT)
+
+  **An agent-driven git commit assistant for [pi](https://pi.dev).**
+</div>
+
+>Stop wrangling git branches and writing commit messages by hand. The LLM reads your diffs, understands your actual code changes, decides the correct branch, writes a conventional commit message, and crafts a professional PR description—all automatically. 
 
 *No hidden logic. No hardcoded heuristics. 100% safe, read-only git analysis until you execute.*
 
