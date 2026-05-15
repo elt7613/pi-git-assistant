@@ -5,7 +5,7 @@
  */
 
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
-import { git } from "./git.js";
+import { git, getDefaultBranch, parseBranchList } from "./git.js";
 import type { CommitParams, ExecuteError, ExecuteResult } from "./types.js";
 
 export async function executeCommit(
@@ -15,10 +15,7 @@ export async function executeCommit(
 ): Promise<ExecuteResult | ExecuteError> {
 	const currentBranch = (await git(pi, ["branch", "--show-current"])).stdout.trim();
 	const allBranchesRaw = (await git(pi, ["branch", "-a"])).stdout;
-	const allBranches = allBranchesRaw
-		.split("\n")
-		.map((b) => b.trim().replace(/^\* /, ""))
-		.filter((b) => b && !b.startsWith("remotes/"));
+	const allBranches = parseBranchList(allBranchesRaw);
 
 	let targetBranch = params.branchName;
 
@@ -74,7 +71,7 @@ export async function executeCommit(
 		prDesc = params.prDescription;
 		if (!prDesc) {
 			// Fallback template if LLM didn't provide one
-			const baseBranch = "main";
+			const baseBranch = await getDefaultBranch(pi);
 			const commits = (await git(pi, ["log", `${baseBranch}..HEAD`, "--oneline"])).stdout.trim();
 			prDesc = generateFallbackPR(params.commitMessage, params.filesToStage, commits, finalBranch, baseBranch);
 		}

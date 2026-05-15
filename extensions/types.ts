@@ -44,7 +44,6 @@ export interface GitContext {
 	filesToAnalyze: string[];
 	fullDiff: string;
 	fileDiffs: Record<string, string>;
-	recentLog: string;
 	allRecentCommits: string;
 }
 

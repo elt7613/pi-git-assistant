@@ -3,7 +3,7 @@
  */
 
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
-import { git } from "./git.js";
+import { git, parseBranchList } from "./git.js";
 import { getSessionFiles } from "./tracker.js";
 import type { GitContextResult } from "./types.js";
 
@@ -14,7 +14,6 @@ export async function gatherGitContext(pi: ExtensionAPI, mode: "session" | "all"
 		allBranches,
 		status,
 		diff,
-		log,
 		recentCommits,
 	] = await Promise.all([
 		git(pi, ["rev-parse", "--git-dir"]),
@@ -22,7 +21,6 @@ export async function gatherGitContext(pi: ExtensionAPI, mode: "session" | "all"
 		git(pi, ["branch", "-a"]),
 		git(pi, ["status", "--short"]),
 		git(pi, ["diff"]),
-		git(pi, ["log", "--oneline", "-5"]),
 		git(pi, ["log", "--oneline", "-20"]),
 	]);
 
@@ -42,25 +40,26 @@ export async function gatherGitContext(pi: ExtensionAPI, mode: "session" | "all"
 		: changedFiles;
 
 	// Get per-file diffs for files we'll actually analyze (limit to 20)
+	const fileDiffEntries = await Promise.all(
+		filesToAnalyze.slice(0, 20).map(async (file) => {
+			const { stdout } = await git(pi, ["diff", "--", file]);
+			return [file, stdout.trim().slice(0, 5000)] as const;
+		}),
+	);
 	const fileDiffs: Record<string, string> = {};
-	for (const file of filesToAnalyze.slice(0, 20)) {
-		const { stdout } = await git(pi, ["diff", "--", file]);
-		if (stdout.trim()) fileDiffs[file] = stdout.slice(0, 5000);
+	for (const [file, diffText] of fileDiffEntries) {
+		if (diffText) fileDiffs[file] = diffText;
 	}
 
 	return {
 		isRepo: true,
 		currentBranch: currentBranch.stdout.trim(),
-		allBranches: allBranches.stdout
-			.split("\n")
-			.map((b) => b.trim().replace(/^\* /, ""))
-			.filter((b) => b && !b.startsWith("remotes/") && !b.includes("HEAD")),
+		allBranches: parseBranchList(allBranches.stdout),
 		changedFiles,
 		trackedFiles,
 		filesToAnalyze,
 		fullDiff: diff.stdout.slice(0, 15000),
 		fileDiffs,
-		recentLog: log.stdout.trim(),
 		allRecentCommits: recentCommits.stdout.trim(),
 	};
 }

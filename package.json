@@ -14,11 +14,17 @@
     "extensions/",
     "README.md"
   ],
+  "scripts": {
+    "test": "vitest run"
+  },
   "pi": {
     "extensions": ["./extensions"]
   },
   "peerDependencies": {
     "@earendil-works/pi-coding-agent": "*",
     "typebox": "*"
+  },
+  "devDependencies": {
+    "vitest": "^1.0.0"
   }
 }
