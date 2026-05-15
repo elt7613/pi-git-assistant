@@ -12,7 +12,8 @@
   "homepage": "https://github.com/elt7613/pi-git-assistant",
   "files": [
     "extensions/",
-    "README.md"
+    "README.md",
+    "LICENSE"
   ],
   "scripts": {
     "test": "vitest run"
