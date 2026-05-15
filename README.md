@@ -1,73 +1,68 @@
-# pi-git-assistant
+# 🤖 pi-git-assistant
 
-Agent-driven git commit assistant for [pi](https://pi.dev).
+[![NPM Version](https://img.shields.io/npm/v/pi-git-assistant.svg?style=flat-square)](https://www.npmjs.com/package/pi-git-assistant)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square)](https://opensource.org/licenses/MIT)
 
-The LLM reads your diffs, understands the changes, decides the right branch, writes the commit message, and optionally crafts a professional PR description. The extension only executes — no hidden logic, no hardcoded heuristics.
+**An agent-driven git commit assistant for [pi](https://pi.dev).**
 
-## Install
+Stop wrangling git branches and writing commit messages by hand. The LLM reads your diffs, understands your actual code changes, decides the correct branch, writes a conventional commit message, and crafts a professional PR description—all automatically. 
 
-Via npm (recommended):
+*No hidden logic. No hardcoded heuristics. 100% safe, read-only git analysis until you execute.*
 
+<video width="100%" controls>
+  <source src="assets/demo.mp4" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
+
+## 🚀 Installation
+
+Install globally via npm (recommended):
 ```bash
 pi install npm:pi-git-assistant
 ```
 
-Via git:
-
+Or install directly from the repository:
 ```bash
 pi install git:github.com/elt7613/pi-git-assistant
 ```
 
-Or from a local path:
+## ⌨️ Commands
 
-```bash
-pi install /path/to/pi-git-assistant
-```
+| Command | Action |
+|---------|--------|
+| `/git-commit` | Commits **only** the files modified during your current active pi session. |
+| `/git-commit-all` | Commits **all** uncommitted changes in the repository. |
 
-## Commands
+### Optional Arguments
+Append these to any command to customize the LLM's behavior:
+- `give pr description` — Generates a comprehensive PR description alongside the commit.
+- `use branch <name>` — Forces the LLM to commit to the specified branch instead of analyzing and creating its own. *(e.g., `/git-commit use branch feat/auth`)*
 
-| Command | What it does |
-|---------|-------------|
-| `/git-commit` | Commit only files touched in this pi session |
-| `/git-commit-all` | Commit all uncommitted changes |
+## 🧠 How It Works
 
-### Optional arguments
+We don't use simple scripts. The LLM natively understands your intent and acts accordingly:
 
-```bash
-/git-commit give pr description
-/git-commit-all give pr description
-/git-commit use branch feat/auth
-/git-commit-all use branch fix/login
-```
+1. **Context Gathering:** The extension fetches `git status`, diffs, and tracks session files.
+2. **Analysis:** The LLM reads the actual code modifications to understand the feature or fix.
+3. **Decision & Formatting:** 
+   - **Branch:** Determines whether to stay, switch, or create a new semantic branch (e.g., `feat/...`, `fix/...`).
+   - **Message:** Generates a strict conventional commit message (< 72 characters, imperative mood).
+4. **Execution:** The agent safely triggers the internal `git_commit_execute` tool to apply the changes.
 
-## How it works
 
-1. **You type** `/git-commit` or `/git-commit-all`
-2. **Extension gathers** git state: diffs, branches, file list, recent history
-3. **LLM analyzes** the actual code changes and decides:
-   - Branch action: stay / switch / create
-   - Branch name (kebab-case, prefixed feat/fix/docs/test/config)
-   - Commit message (imperative present tense, under 72 chars)
-   - Which files to stage
-   - PR description (if requested)
-4. **LLM calls** `git_commit_execute` tool with its decisions
-5. **Extension runs** the git commands and reports the result
+![Process Flow](assets/flow.png)
 
-## Strict branch rules (enforced in LLM prompt)
+## 🛡️ Strict Safety & Branch Rules
 
-- `main` / `master` / `develop` → **always** create new branch
-- Current branch gets **zero** special treatment
-- "Close enough" is **not** a match → create new branch
-- When in doubt, **always** create a new branch
+We enforce strict guardrails inside the LLM prompt to protect your repository:
 
-## Session tracking
+- **Protected Branches:** It will **always** create a new branch if you are currently on `main`, `master`, or `develop`.
+- **Zero Hallucination Tolerance:** Current branches get no special treatment. If the code changes do not perfectly match the current branch intent, the LLM will create a new one. 
+- **Safe Commands Only:** The extension operates purely through read-only git analysis until the final execution. It uses `git checkout`, `git add`, and `git commit`. 
+  - *It **never** uses stash, restore, reset, rebase, merge, cherry-pick, clean, pull, or push.*
 
-Files touched by `write` and `edit` tools during a pi session are automatically tracked. Tracking survives session resume — so `/git-commit` works even after you `/resume` a previous session.
+## 🕒 Persistent Session Tracking
 
-## Safe git commands only
+Working across multiple days? No problem. 
 
-This extension only uses:
-- `git status`, `git branch`, `git log`, `git diff`
-- `git checkout`, `git add`, `git commit`
-
-**Never uses:** stash, restore, reset, rebase, merge, cherry-pick, clean, pull, push.
+Any files touched by the `write` or `edit` tools during your pi session are automatically tracked. This tracking survives a session `/resume`—meaning `/git-commit` will still perfectly remember the scope of your work even if you restart your environment.
