@@ -1,4 +1,4 @@
-# git-assistant
+# pi-git-assistant
 
 Agent-driven git commit assistant for [pi](https://pi.dev).
 
