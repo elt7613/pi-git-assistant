@@ -9,11 +9,6 @@ Stop wrangling git branches and writing commit messages by hand. The LLM reads y
 
 *No hidden logic. No hardcoded heuristics. 100% safe, read-only git analysis until you execute.*
 
-<video width="100%" controls>
-  <source src="https://github.com/elt7613/pi-git-assistant/raw/main/assets/demo.mp4" type="video/mp4">
-  Your browser does not support the video tag.
-</video>
-
 ## 🚀 Installation
 
 Install globally via npm (recommended):
