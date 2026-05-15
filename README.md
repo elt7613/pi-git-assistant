@@ -9,9 +9,7 @@ Stop wrangling git branches and writing commit messages by hand. The LLM reads y
 
 *No hidden logic. No hardcoded heuristics. 100% safe, read-only git analysis until you execute.*
 
-<video width="100%" controls>
-  <source src="https://github.com/user-attachments/assets/ab41b902-a6af-4ea6-8dcc-3c264a16165f" type="video/mp4">
-</video>
+https://github.com/user-attachments/assets/ab41b902-a6af-4ea6-8dcc-3c264a16165f
 
 ## 🚀 Installation
 
