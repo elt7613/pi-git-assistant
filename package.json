@@ -1,6 +1,6 @@
 {
   "name": "pi-git-assistant",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "AI-powered git commit assistant for the Pi coding agent. Automatically analyzes diffs, manages branches, writes conventional commit messages, and generates pull request descriptions.",
   "keywords": [
     "pi-package",
@@ -15,6 +15,11 @@
     "developer-tools",
     "automation",
     "conventional-commits",
+    "pi-git-assistant",
+    "git-automation",
+    "git-diff-analysis",
+    "git-branch-management",
+    "git-assistant",
     "pull-request-generator"
   ],
   "author": "",

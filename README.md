@@ -35,6 +35,7 @@ pi install git:github.com/elt7613/pi-git-assistant
 |---------|--------|
 | `/git-commit` | Commits **only** the files modified during your current active pi session. |
 | `/git-commit-all` | Commits **all** uncommitted changes in the repository. |
+| `/git-commit-reset-gate` | Resets the execution gate so the agent can prompt again after a previous denial. |
 
 ### Optional Arguments
 Append these to any command to customize the LLM's behavior:
@@ -55,13 +56,23 @@ We don't use simple scripts. The LLM natively understands your intent and acts a
 
 ![Process Flow](assets/flow.png)
 
+## 🛡️ Execution Gate
+
+Before the agent can **autonomously** execute a git commit, you must explicitly approve it via a confirmation dialog:
+
+- **Yes** → The commit executes **once**. The next autonomous attempt will prompt again.
+- **No** → The gate **locks for the entire session**. All future autonomous commit attempts fail immediately with a terminal error, preventing unbreakable agent retry loops.
+- **Reset** → Run `/git-commit-reset-gate` from the Command Palette to manually unlock the gate.
+
+> Manual commands (`/git-commit`, `/git-commit-all`) **bypass the gate entirely**. When you explicitly trigger a commit, the analysis and execution flow straight through without additional prompts. The gate only applies when the agent initiates a commit on its own.
+
 ## 🛡️ Strict Safety & Branch Rules
 
 We enforce strict guardrails inside the LLM prompt to protect your repository:
 
 - **Protected Branches:** It will **always** create a new branch if you are currently on `main`, `master`, or `develop`.
-- **Zero Hallucination Tolerance:** Current branches get no special treatment. If the code changes do not perfectly match the current branch intent, the LLM will create a new one. 
-- **Safe Commands Only:** The extension operates purely through read-only git analysis until the final execution. It uses `git checkout`, `git add`, and `git commit`. 
+- **Zero Hallucination Tolerance:** Current branches get no special treatment. If the code changes do not perfectly match the current branch intent, the LLM will create a new one.
+- **Safe Commands Only:** The extension operates purely through read-only git analysis until the final execution. It uses `git checkout`, `git add`, and `git commit`.
   - *It **never** uses stash, restore, reset, rebase, merge, cherry-pick, clean, pull, or push.*
 
 ## 🕒 Persistent Session Tracking

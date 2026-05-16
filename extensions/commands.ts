@@ -5,6 +5,7 @@
 import type { ExtensionAPI, ExtensionContext } from "@earendil-works/pi-coding-agent";
 import { gatherGitContext } from "./context.js";
 import { buildAnalysisPrompt } from "./prompt.js";
+import { setManualTriggerPending } from "./gate.js";
 
 let currentCommitMode: "session" | "all" = "session";
 
@@ -62,6 +63,9 @@ export async function triggerCommit(
 
 	// Set mode so the tool handler knows whether to use "git add ." or individual adds
 	setCommitMode(mode);
+
+	// Mark that this commit was triggered by a manual command — bypass the gate
+	setManualTriggerPending(true);
 
 	// Send to LLM for analysis — it will read the context and call git_commit_execute
 	await pi.sendUserMessage(prompt, { triggerTurn: true });
