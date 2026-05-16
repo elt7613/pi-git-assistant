@@ -14,11 +14,23 @@ import type { ExtensionContext } from "@earendil-works/pi-coding-agent";
 
 let sessionBlocked = false;
 let dialogActive = false;
+let manualTriggerPending = false;
 
 /** Reset the gate so the next autonomous tool call will prompt again. */
 export function resetGate(): void {
 	sessionBlocked = false;
 	dialogActive = false;
+	manualTriggerPending = false;
+}
+
+/** Mark that the next tool call was triggered by a manual command (bypass gate). */
+export function setManualTriggerPending(pending: boolean): void {
+	manualTriggerPending = pending;
+}
+
+/** Check whether a manual trigger is pending (gate should be bypassed). */
+export function isManualTriggerPending(): boolean {
+	return manualTriggerPending;
 }
 
 /** Check whether the gate is currently locked (user previously denied). */

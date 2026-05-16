@@ -9,6 +9,8 @@ import {
 	requestApproval,
 	getBlockedError,
 	getPendingError,
+	setManualTriggerPending,
+	isManualTriggerPending,
 } from "../gate.js";
 
 function makeCtx(approved: boolean) {
@@ -63,5 +65,22 @@ describe("gate", () => {
 		const err = getPendingError();
 		expect(err.isError).toBe(true);
 		expect(err.content[0].text).toContain("Do not retry immediately");
+	});
+
+	it("manual trigger starts false", () => {
+		expect(isManualTriggerPending()).toBe(false);
+	});
+
+	it("setManualTriggerPending toggles flag", () => {
+		setManualTriggerPending(true);
+		expect(isManualTriggerPending()).toBe(true);
+		setManualTriggerPending(false);
+		expect(isManualTriggerPending()).toBe(false);
+	});
+
+	it("resetGate clears manual trigger flag", () => {
+		setManualTriggerPending(true);
+		resetGate();
+		expect(isManualTriggerPending()).toBe(false);
 	});
 });

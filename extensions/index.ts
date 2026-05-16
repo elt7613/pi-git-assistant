@@ -25,6 +25,8 @@ import {
 	getBlockedError,
 	getPendingError,
 	resetGate,
+	isManualTriggerPending,
+	setManualTriggerPending,
 } from "./gate.js";
 
 export default function (pi: ExtensionAPI) {
@@ -83,19 +85,25 @@ export default function (pi: ExtensionAPI) {
 		}),
 
 		async execute(_toolCallId, params, _signal, onUpdate, ctx: ExtensionContext) {
-			// Gate: block if user previously denied this session
-			if (isGateBlocked()) {
-				return getBlockedError();
-			}
+			// Check if this execution was triggered by a manual command (/git-commit, /git-commit-all)
+			const wasManual = isManualTriggerPending();
+			setManualTriggerPending(false);
 
-			// Gate: ask user for one-time approval
-			const approved = await requestApproval(ctx);
-			if (!approved) {
-				// If still not blocked, it means a dialog was already active
-				if (!isGateBlocked()) {
-					return getPendingError();
+			if (!wasManual) {
+				// Gate: block if user previously denied this session
+				if (isGateBlocked()) {
+					return getBlockedError();
 				}
-				return getBlockedError();
+
+				// Gate: ask user for one-time approval
+				const approved = await requestApproval(ctx);
+				if (!approved) {
+					// If still not blocked, it means a dialog was already active
+					if (!isGateBlocked()) {
+						return getPendingError();
+					}
+					return getBlockedError();
+				}
 			}
 
 			onUpdate?.({

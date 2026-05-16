@@ -58,13 +58,13 @@ We don't use simple scripts. The LLM natively understands your intent and acts a
 
 ## 🛡️ Execution Gate
 
-Before the agent can autonomously execute any git commit, you must explicitly approve it via a confirmation dialog:
+Before the agent can **autonomously** execute a git commit, you must explicitly approve it via a confirmation dialog:
 
-- **Yes** → The commit executes **once**. The next commit attempt will prompt again.
+- **Yes** → The commit executes **once**. The next autonomous attempt will prompt again.
 - **No** → The gate **locks for the entire session**. All future autonomous commit attempts fail immediately with a terminal error, preventing unbreakable agent retry loops.
 - **Reset** → Run `/git-commit-reset-gate` from the Command Palette to manually unlock the gate.
 
-> Manual commands (`/git-commit`, `/git-commit-all`) are not gated themselves — they trigger LLM analysis. Only the resulting autonomous `git_commit_execute` tool call requires your approval.
+> Manual commands (`/git-commit`, `/git-commit-all`) **bypass the gate entirely**. When you explicitly trigger a commit, the analysis and execution flow straight through without additional prompts. The gate only applies when the agent initiates a commit on its own.
 
 ## 🛡️ Strict Safety & Branch Rules
 
