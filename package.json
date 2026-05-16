@@ -15,6 +15,11 @@
     "developer-tools",
     "automation",
     "conventional-commits",
+    "pi-git-assistant",
+    "git-automation",
+    "git-diff-analysis",
+    "git-branch-management",
+    "git-assistant",
     "pull-request-generator"
   ],
   "author": "",
