@@ -38,10 +38,16 @@ export async function executeCommit(
 	// /git-commit-all ALWAYS uses "git add ." regardless of what LLM listed
 	// /git-commit uses individual file adds from LLM's selection
 	if (mode === "all") {
-		await git(pi, ["add", "."]);
+		const { code, stderr } = await git(pi, ["add", "."]);
+		if (code !== 0) {
+			return { ok: false, error: `Failed to stage files: ${stderr}` };
+		}
 	} else {
 		for (const file of params.filesToStage) {
-			await git(pi, ["add", file]);
+			const { code, stderr } = await git(pi, ["add", file]);
+			if (code !== 0) {
+				return { ok: false, error: `Failed to stage ${file}: ${stderr}` };
+			}
 		}
 	}
 

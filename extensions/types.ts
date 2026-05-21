@@ -42,7 +42,6 @@ export interface GitContext {
 	changedFiles: string[];
 	trackedFiles: string[];
 	filesToAnalyze: string[];
-	fullDiff: string;
 	fileDiffs: Record<string, string>;
 	allRecentCommits: string;
 }
