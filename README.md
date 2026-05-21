@@ -1,7 +1,7 @@
 
 
 <div align="center">
-  <img src="assets/cover.png" alt="pi-git-assistant cover" />
+  <img src="https://github.com/elt7613/pi-git-assistant/blob/main/assets/cover.png" alt="pi-git-assistant cover" />
 
   # 𝞹 git-assistant
 
