@@ -20,6 +20,30 @@ describe("toRepoRelative", () => {
 		const result = toRepoRelative("/home/user/project", "/home/user/project");
 		expect(result).toBeNull();
 	});
+
+	it("resolves relative paths against the supplied baseCwd", () => {
+		const result = toRepoRelative("foo.ts", "/home/user/project", "/home/user/project/src");
+		expect(result).toBe("src/foo.ts");
+	});
+
+	it("resolves dotted relative paths against baseCwd", () => {
+		const result = toRepoRelative("./pkg/index.ts", "/home/user/project", "/home/user/project");
+		expect(result).toBe("pkg/index.ts");
+	});
+
+	it("returns null when relative path resolves outside the repo", () => {
+		const result = toRepoRelative("../other/file.ts", "/home/user/project", "/home/user/project");
+		expect(result).toBeNull();
+	});
+
+	it("prefers absolute paths over baseCwd", () => {
+		const result = toRepoRelative(
+			"/home/user/project/src/a.ts",
+			"/home/user/project",
+			"/some/unrelated/cwd",
+		);
+		expect(result).toBe("src/a.ts");
+	});
 });
 
 describe("parseBranchList", () => {

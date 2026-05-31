@@ -32,9 +32,9 @@ import {
 export default function (pi: ExtensionAPI) {
 	// Track session file changes (persisted in session)
 	// NOTE: use "tool_result" not "tool_execution_end" because only tool_result has event.input
-	pi.on("tool_result", async (event) => {
+	pi.on("tool_result", async (event, ctx) => {
 		if (event.toolName === "write" || event.toolName === "edit") {
-			await handleToolResult(pi, event);
+			await handleToolResult(pi, event, ctx);
 		}
 	});
 

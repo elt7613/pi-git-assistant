@@ -3,7 +3,7 @@
  */
 
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
-import { relative } from "node:path";
+import { isAbsolute, relative, resolve } from "node:path";
 import type { GitResult } from "./types.js";
 
 let repoRootCache: string | null = null;
@@ -20,7 +20,17 @@ export function clearRepoRootCache(): void {
 	repoRootCache = null;
 }
 
-export function toRepoRelative(absPath: string, repoRoot: string): string | null {
+/**
+ * Map a path (absolute OR relative) to a repo-root-relative POSIX path.
+ *
+ * For relative inputs, resolve against `baseCwd` rather than `process.cwd()`.
+ * The pi `write`/`edit` tools accept relative paths and resolve them via the
+ * agent's cwd internally — so the extension must use the SAME cwd to round-trip
+ * back to a stable repo-relative path. Falling back to `process.cwd()` matches
+ * legacy behavior for callers that don't supply `baseCwd`.
+ */
+export function toRepoRelative(rawPath: string, repoRoot: string, baseCwd?: string): string | null {
+	const absPath = isAbsolute(rawPath) ? rawPath : resolve(baseCwd ?? process.cwd(), rawPath);
 	const rel = relative(repoRoot, absPath).replace(/\\/g, "/");
 	if (rel.startsWith("..") || rel === "." || rel === "") return null;
 	return rel;

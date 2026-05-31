@@ -6,6 +6,7 @@ import type { ExtensionAPI, ExtensionContext } from "@earendil-works/pi-coding-a
 import { gatherGitContext } from "./context.js";
 import { buildAnalysisPrompt } from "./prompt.js";
 import { setManualTriggerPending } from "./gate.js";
+import { refreshSessionFiles } from "./tracker.js";
 
 let currentCommitMode: "session" | "all" = "session";
 
@@ -40,6 +41,12 @@ export async function triggerCommit(
 	const { wantPR, forcedBranch } = parseCommitArgs(args);
 
 	ctx.ui.notify("Gathering git context for AI analysis...", "info");
+
+	// Always rebuild the in-memory tracking Set from the session's on-disk
+	// entries before analyzing. This ensures /git-commit sees every write/edit
+	// recorded in the session — even if the extension was installed or activated
+	// mid-session and `session_start` never fired for the existing session.
+	await refreshSessionFiles(ctx, pi);
 
 	const gitCtx = await gatherGitContext(pi, mode);
 
